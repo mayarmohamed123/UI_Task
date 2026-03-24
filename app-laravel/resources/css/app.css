@@ -6,6 +6,17 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Tajawal', 'IBM Plex Sans Arabic', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-quran: 'KFGQPC Uthman Taha Naskh', 'Mushaf V2', serif;
+
+    --color-primary: #D4AF37;       /* Gold/Amber */
+    --color-primary-dark: #B4941F;
+    --color-secondary: #0B1120;     /* Deep Navy Navbar */
+    --color-bg-main: #F8FAFC;       /* Main Body Background */
+    --color-bg-card: #FFFFFF;       /* Cards & Sidebars */
+    --color-text-primary: #1E293B;  /* Deep Charcoal */
+    --color-text-secondary: #64748B; /* Muted Slate Gray */
+    --color-accent-red: #EF4444;    /* Undo/Reset/Fath */
+    --color-accent-orange: #F59E0B; /* Tanbeeh */
+    --color-accent-green: #22C55E;  /* Success indicators */
 }

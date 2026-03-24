@@ -1353,10 +1353,10 @@
 
                 if (i === currentIndex) {
                     // Selected state
-                    item.classList.add('bg-blue-900', 'text-white', 'shadow-md', 'border-blue-900', 'scale-[1.01]');
+                    item.classList.add('bg-secondary', 'text-white', 'shadow-md', 'border-secondary', 'scale-[1.01]');
                     item.classList.remove('bg-slate-50', 'text-slate-600', 'border-slate-200');
                     if (numberBadge) {
-                        numberBadge.classList.add('bg-white', 'text-blue-900');
+                        numberBadge.classList.add('bg-white', 'text-secondary');
                         numberBadge.classList.remove('bg-slate-200', 'text-slate-500');
                     }
                     if (titleElement) {
@@ -1365,10 +1365,10 @@
                     }
                 } else {
                     // Unselected state
-                    item.classList.remove('bg-blue-900', 'text-white', 'shadow-md', 'border-blue-900', 'scale-[1.01]');
+                    item.classList.remove('bg-secondary', 'text-white', 'shadow-md', 'border-secondary', 'scale-[1.01]');
                     item.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-200');
                     if (numberBadge) {
-                        numberBadge.classList.remove('bg-white', 'text-blue-900');
+                        numberBadge.classList.remove('bg-white', 'text-secondary');
                         numberBadge.classList.add('bg-slate-200', 'text-slate-500');
                     }
                     if (titleElement) {
@@ -3255,11 +3255,11 @@
 </script>
 
 <!-- Modal تأكيد الحفظ -->
-<div id="save-confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+<div id="save-confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 items-center justify-center">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
         <div class="p-6">
             <div class="flex items-center mb-4">
-                <div class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                <div class="shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
                     <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
                 </div>
                 <div class="me-4">

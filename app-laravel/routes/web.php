@@ -163,3 +163,20 @@ Route::get('/quran', function () {
 Route::post('/quran/store', function () {
     return response()->json(['success' => true, 'message' => 'تم الحفظ بنجاح', 'redirect' => route('judgings.index')]);
 })->name('quranjudgings.store');
+
+// Mock API for reveal system
+Route::get('/api/judgings/tafseer/reveals/status', function () {
+    return response()->json(['revealed' => [101, 102]]);
+});
+
+Route::post('/api/judgings/tafseer/reveals', function () {
+    return response()->json(['success' => true]);
+});
+
+Route::get('/api/judgings/quran/reveals/status', function () {
+    return response()->json(['revealed' => [1, 2]]);
+});
+
+Route::post('/api/judgings/quran/reveals', function () {
+    return response()->json(['success' => true]);
+});

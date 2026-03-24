@@ -595,10 +595,10 @@
 
                 if (itemIndex === window.currentIndex) {
                     // Selected state (like Quran)
-                    item.classList.add('bg-blue-900', 'text-white', 'shadow-sm', 'border-blue-900');
+                    item.classList.add('bg-secondary', 'text-white', 'shadow-sm', 'border-secondary');
                     item.classList.remove('bg-slate-50', 'text-slate-600', 'border-slate-200');
                     if (numberBadge) {
-                        numberBadge.classList.add('bg-white', 'text-blue-900');
+                        numberBadge.classList.add('bg-white', 'text-secondary');
                         numberBadge.classList.remove('bg-slate-200', 'text-slate-500');
                     }
                     if (titleElement) {
@@ -607,10 +607,10 @@
                     }
                 } else {
                     // Unselected state (like Quran)
-                    item.classList.remove('bg-blue-900', 'text-white', 'shadow-sm', 'border-blue-900');
+                    item.classList.remove('bg-secondary', 'text-white', 'shadow-sm', 'border-secondary');
                     item.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-200');
                     if (numberBadge) {
-                        numberBadge.classList.remove('bg-white', 'text-blue-900');
+                        numberBadge.classList.remove('bg-white', 'text-secondary');
                         numberBadge.classList.add('bg-slate-200', 'text-slate-500');
                     }
                     if (titleElement) {

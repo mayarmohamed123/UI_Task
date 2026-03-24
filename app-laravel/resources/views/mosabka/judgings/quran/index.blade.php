@@ -1,22 +1,58 @@
 @include('mosabka::judgings.quran.header')
+@php 
+    $safeIndex = is_numeric($currentIndex) ? (int)$currentIndex : 0; 
+    
+    // Performance Notes Content as requested by user
+    $demoNotes = [
+        ['id' => 101, 'note' => 'قصر المد', 'category_name' => 'مدود'],
+        ['id' => 102, 'note' => 'زيادة المد', 'category_name' => 'مدود'],
+        ['id' => 103, 'note' => 'عدم التفريق بين المدود', 'category_name' => 'مدود'],
+        ['id' => 104, 'note' => 'ترك المد اللازم', 'category_name' => 'مدود'],
+        ['id' => 105, 'note' => 'تفاوت المد المتصل', 'category_name' => 'مدود'],
+        ['id' => 106, 'note' => 'نقص الغنة', 'category_name' => 'غنن'],
+        ['id' => 107, 'note' => 'غنة في غير موضعها', 'category_name' => 'غنن'],
+        ['id' => 108, 'note' => 'إطالة الغنة', 'category_name' => 'غنن'],
+        ['id' => 109, 'note' => 'عدم إظهار الغنة', 'category_name' => 'غنن'],
+        ['id' => 110, 'note' => 'خطأ في المخرج', 'category_name' => 'مخارج'],
+        ['id' => 111, 'note' => 'عدم تمييز الحروف المتقاربة', 'category_name' => 'مخارج'],
+        ['id' => 112, 'note' => 'ضعف إخراج المستعلية', 'category_name' => 'مخارج'],
+        ['id' => 113, 'note' => 'ترك القلقلة', 'category_name' => 'صفات'],
+        ['id' => 114, 'note' => 'ضعف الهمس', 'category_name' => 'صفات'],
+        ['id' => 115, 'note' => 'عدم تفخيم المفخم', 'category_name' => 'صفات'],
+        ['id' => 116, 'note' => 'ترقيق المفخم', 'category_name' => 'صفات'],
+        ['id' => 117, 'note' => 'وقف قبيح', 'category_name' => 'وقف'],
+        ['id' => 118, 'note' => 'وصل ما يجب قطعه', 'category_name' => 'وقف'],
+        ['id' => 119, 'note' => 'ضعف الوقف والابتداء', 'category_name' => 'وقف'],
+        ['id' => 120, 'note' => 'تردد', 'category_name' => 'أداء'],
+        ['id' => 121, 'note' => 'سرعة في القراءة', 'category_name' => 'أداء'],
+        ['id' => 122, 'note' => 'خلط بين الآيات', 'category_name' => 'أداء'],
+        ['id' => 123, 'note' => 'عدم الترتيل', 'category_name' => 'أداء'],
+        ['id' => 124, 'note' => 'ترتيل ممتاز', 'category_name' => 'أداء'],
+        ['id' => 125, 'note' => 'إدغام ناقص', 'category_name' => 'إدغام'],
+        ['id' => 126, 'note' => 'إدغام في غير موضعه', 'category_name' => 'إدغام'],
+        ['id' => 127, 'note' => 'ترك الإدغام', 'category_name' => 'إدغام'],
+    ];
+    $notes = collect($demoNotes)->map(fn($n) => (object)$n);
+    $categories = $notes->groupBy('category_name');
+@endphp
 
 <style>
     /* CSS Variables for New Palette */
     :root {
-        --color-navy: #1e2540;
-        --color-gold: #e0b57b;
-        --color-gold-dark: #c99d5f;
-        --color-cream: #f8f7f2;
+        --color-navy: var(--color-secondary);
+        --color-gold: var(--color-primary);
+        --color-gold-dark: var(--color-primary-dark);
+        --color-cream: var(--color-bg-main);
         --color-mushaf-bg: #fffef8;
-        --color-border: #e4e6ef;
-        --color-text-navy: #30355a;
-        --color-text-muted: #7e8299;
+        --color-border: #e2e8f0;
+        --color-text-navy: var(--color-text-primary);
+        --color-text-muted: var(--color-text-secondary);
     }
 
     /* Layout & Scrolling */
     #main-layout {
-        height: calc(100vh - 64px);
-        margin-top: 64px;
+        height: calc(100vh - var(--judging-header-offset, 80px));
+        margin-top: 0 !important; /* Managed by body padding-top */
         background-color: var(--color-cream);
         display: flex;
         overflow: hidden;
@@ -232,7 +268,7 @@
     }
     .mushaf-content-area {
         background-color: var(--color-mushaf-bg);
-        font-family: 'Lateef', serif;
+        font-family: var(--font-quran);
         position: relative;
     }
     .mushaf-text-display {
@@ -523,15 +559,15 @@
         position: relative;
         width: 100%;
         padding: 0.85rem 1rem;
-        background-color: #fdfcf5; /* Light cream */
-        border: 1.5px solid #eadbba; /* Light gold border */
-        color: #b58c50; /* Dark gold text */
+        background-color: #fdfcf5;
+        border: 1.5px solid var(--color-primary);
+        color: var(--color-primary-dark);
         border-radius: 0.85rem;
         font-weight: 700;
         font-size: 0.95rem;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: 0 2px 6px rgba(224, 181, 123, 0.15);
+        box-shadow: 0 2px 6px rgba(212, 175, 55, 0.15);
     }
     .nafes-relief-btn .relief-icon {
         position: absolute;
@@ -600,126 +636,159 @@
         border-color: var(--color-gold-dark);
         box-shadow: 0 4px 10px rgba(224, 181, 123, 0.4);
     }
+    /* Nafes Chips Style */
+    .nafes-note-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: #fef9c3; /* yellow-100 */
+        border: 1px solid #fde047; /* yellow-300 */
+        border-radius: 9999px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #854d0e; /* yellow-800 */
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
+    .nafes-note-chip:hover {
+        background-color: #fef08a; /* yellow-200 */
+        border-color: #facc15; /* yellow-400 */
+    }
+    .nafes-note-chip .remove-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: rgba(133, 77, 14, 0.1);
+        color: #854d0e;
+        cursor: pointer;
+        font-size: 8px;
+    }
+    .nafes-note-chip .remove-btn:hover {
+        background-color: rgba(133, 77, 14, 0.2);
+    }
+    .nafes-notes-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    .nafes-notes-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: #1e2540;
+        font-size: 14px;
+    }
+    .nafes-notes-title i {
+        color: #eab308; /* yellow-500 */
+        font-size: 12px;
+    }
+    .nafes-btn-all {
+        background-color: #fdfdfb;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        color: #94a3b8;
+        font-weight: 800;
+        font-size: 10px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+    .nafes-btn-all:hover {
+        background-color: #f8fafc;
+        color: #ca8a04;
+        border-color: #fde047;
+    }
+    .nafes-search-input-container {
+        background-color: white;
+        border: 1px solid #f1f5f9;
+        border-radius: 12px;
+        padding: 4px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .nafes-search-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 600;
+    }
+    .nafes-search-input::placeholder {
+        color: #cbd5e1;
+    }
+    .nafes-search-input:focus {
+        outline: none;
+    }
 </style>
 
-<main id="main-layout" class="animate-in flex flex-col xl:flex-row flex-1 min-h-[calc(100vh-80px)] xl:h-[calc(100vh-80px)] xl:overflow-hidden w-full max-w-[1920px] mx-auto">
-    <!-- LEFT SIDEBAR: Questions -->
-    <aside id="questions-sidebar" class="w-full xl:w-[300px] 2xl:w-[320px] border-b xl:border-b-0 xl:border-l border-slate-200 bg-white flex flex-col h-auto xl:h-full sidebar-scroller shrink-0">
-        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-[#fdfdfb] shrink-0">
-            <h2 class="font-bold text-[#1e2540]">الأسئلة</h2>
-            <span class="text-xs px-2 py-1 bg-slate-100 text-slate-500 rounded-full font-bold">
-                {{ count($questions) }}/<span id="questions-current-count">{{ $currentIndex + 1 }}</span>
-            </span>
-        </div>
-        <div id="questions-list-container" class="flex-1 overflow-y-auto p-4 space-y-2 bg-[#fdfdfb] max-h-[40vh] xl:max-h-none">
-            @foreach ($questions as $index => $q)
-                <div onclick="switchToQuestion({{ $index }})" 
-                     id="question-pill-{{ $index }}"
-                     class="question-pill {{ $index === $currentIndex ? 'active' : '' }} group">
-                    <div class="status-circle {{ isset($allAnswers[$index]) ? 'completed' : '' }}">
-                        <span id="question-num-{{ $index }}">{{ $index + 1 }}</span>
-                        <i class="fas fa-check {{ isset($allAnswers[$index]) ? '' : 'hidden' }} text-[10px]" id="check-{{ $index }}"></i>
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                        <h4 class="text-sm font-bold text-[#30355a] truncate">سورة {{ $q['question']->surah }}</h4>
-                        <div class="question-meta truncate">
-                            @if(isset($q['question']->start_ayah_number) && isset($q['question']->end_ayah_number))
-                                من الآية {{ $q['question']->start_ayah_number }} إلى {{ $q['question']->end_ayah_number }}
-                            @else
-                                {{ \Illuminate\Support\Str::limit($q['question']->question_text, 30) }}
-                            @endif
-                        </div>
-                        @if(isset($q['question']->qiraa_name) && !empty($q['question']->qiraa_name))
-                            <span class="qiraa-badge">{{ $q['question']->qiraa_name }}</span>
-                        @endif
-                    </div>
-                </div>
-            @endforeach
-        </div>
-        
-        <!-- Nafes Bottom Action Area -->
-        <div class="p-4 bg-white border-t border-slate-100 shrink-0">
-            <button class="nafes-relief-btn" onclick="toggleReliefBox()">
-                طلب التخفيف
-                <i class="fas fa-asterisk relief-icon"></i>
-            </button>
-        </div>
-    </aside>
+<script>
+    function showAllNotesModal() {
+        const modal = document.getElementById('all-notes-modal');
+        const content = document.getElementById('all-notes-modal-content');
+        if (modal && content) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                content.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+                content.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+            }, 10);
+        }
+    }
+</script>
 
-    <!-- CENTER: Mushaf & Question -->
-    <section id="question-content" class="w-full xl:flex-1 bg-[#f8f7f2] flex flex-col h-auto xl:h-full overflow-visible xl:overflow-hidden border-b xl:border-b-0 xl:border-l xl:border-r border-slate-200">
-        <!-- Question Text Card -->
-        <div class="p-6 bg-white m-6 mb-2 rounded-2xl shadow-sm border border-slate-100 relative">
-            <span class="absolute top-6 right-6 w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.4)]"></span>
-            <div class="pe-6">
-                <span class="text-[10px] font-bold text-slate-400 mb-1 block uppercase tracking-wider">نص السؤال</span>
-                <h3 id="current-question-text" class="text-lg font-bold text-[#1e2540] leading-relaxed">{{ $questions[$currentIndex]['question']->question_text }}</h3>
-            </div>
-        </div>
-        
-        <!-- Mushaf Container -->
-        <div class="flex-1 bg-white mx-4 md:mx-6 mb-4 md:mb-6 rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col min-h-[50vh] xl:min-h-0">
-             <div class="quran-scroll-area flex-1 overflow-y-auto p-6 md:p-8 xl:p-10 bg-[#fffef8]">
-                 <div id="mushaf-rendered-content" class="mushaf-text-display">
-                     <!-- Loading content -->
-                     <div class="flex items-center justify-center h-full text-slate-300">
-                         <i class="fas fa-spinner fa-spin text-3xl"></i>
-                     </div>
-                 </div>
-             </div>
-             <!-- Nafes Bottom Navigation -->
-             <div class="p-4 border-t border-slate-100 bg-white flex justify-between items-center relative z-10 w-full rounded-b-2xl">
-                 <button type="button" onclick="if(typeof window.switchToQuestion === 'function' && window.currentIndex > 0) window.switchToQuestion(window.currentIndex - 1)" class="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-200 text-slate-500 font-bold hover:bg-slate-50 hover:text-[#1e2540] transition-colors active:scale-95 shadow-sm prev-btn">
-                     <i class="fas fa-chevron-right text-[10px]"></i>
-                     <span class="text-xs uppercase tracking-wider">السؤال السابق</span>
-                 </button>
-                 <button type="button" onclick="if(typeof window.switchToQuestion === 'function' && window.currentIndex < (window.allAnswers ? window.allAnswers.length : 10) - 1) window.switchToQuestion(window.currentIndex + 1)" class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#1e2540] text-white font-bold hover:bg-[#2d375e] transition-colors shadow hover:shadow-md active:scale-95 next-btn">
-                     <span class="text-xs uppercase tracking-wider">السؤال التالي</span>
-                     <i class="fas fa-chevron-left text-[10px]"></i>
-                 </button>
-             </div>
-        </div>
-    </section>
-
+<main id="main-layout" class="animate-in flex flex-col xl:flex-row flex-1 min-h-[calc(100vh-var(--judging-header-offset,80px))] xl:h-[calc(100vh-var(--judging-header-offset,80px))] xl:overflow-hidden w-full max-w-[1920px] mx-auto">
     <!-- RIGHT SIDEBAR: Scoring & Notes -->
     <aside id="scores-sidebar" class="w-full xl:w-[420px] 2xl:w-[480px] bg-white h-auto xl:h-full flex flex-col overflow-visible xl:overflow-hidden shrink-0">
         <!-- Score Summary box -->
-        <div class="p-6 bg-[#1e2540] m-6 mb-2 rounded-2xl text-white shadow-xl relative overflow-hidden group">
+        <div class="p-6 bg-secondary m-6 mb-2 rounded-2xl text-white shadow-xl relative overflow-hidden group">
             <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors"></div>
             
-            <div class="relative z-10">
-                <p class="text-[10px] font-bold text-slate-400 mb-4 opacity-80 uppercase tracking-widest">ملخص الدرجات</p>
+            <div class="relative z-10 text-center">
+                <p class="text-[10px] font-bold text-slate-400 mb-4 opacity-80 uppercase tracking-widest text-center">الدرجة النهائية</p>
                 <div class="flex items-baseline justify-center gap-2 mb-6">
                     <span id="final-score-display" class="text-6xl font-bold tracking-tight text-white">{{ $total_score }}</span>
                     <span class="text-xl text-slate-500">/ 100</span>
-                    <span id="deduction-info" class="text-sm text-red-400 font-bold me-2"></span>
                 </div>
                 
                 <!-- Mini boxes -->
                 <div class="grid grid-cols-4 gap-2">
                     <div class="score-mini-card">
-                        <p class="score-mini-label text-slate-400">الحفظ</p>
+                        <p class="score-mini-label">الحفظ</p>
                         <p id="mini-score-hifz" class="score-mini-value">0.0</p>
                     </div>
                     <div class="score-mini-card">
-                        <p class="score-mini-label text-slate-400">التجويد</p>
-                         <p id="mini-score-tajweed" class="score-mini-value">0.0</p>
+                        <p class="score-mini-label">التجويد</p>
+                        <p id="mini-score-tajweed" class="score-mini-value">0.0</p>
                     </div>
                     <div class="score-mini-card">
-                        <p class="score-mini-label text-slate-400">الأداء</p>
+                        <p class="score-mini-label">الأداء</p>
                         <p id="mini-score-adaa" class="score-mini-value">0.0</p>
                     </div>
                     <div class="score-mini-card">
-                        <p class="score-mini-label text-slate-400">البداية</p>
-                        <p id="mini-score-bidaya" class="score-mini-value">0.0</p>
+                        <p class="score-mini-label text-slate-400">الإجمالي</p>
+                        <p id="mini-score-total" class="score-mini-value text-primary">{{ $total_score }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <form id="current-answer-form" class="flex flex-col flex-1 overflow-hidden" 
-              data-question-id="{{ $questions[$currentIndex]['question']->id }}"
+              data-question-id="{{ $questions[$safeIndex]['question']->id ?? '' }}"
               data-participant-id="{{ $participant_id }}">
+            
+            <!-- Internal Scrollable Area -->
+            <div class="flex-1 overflow-y-auto sidebar-scroller flex flex-col min-h-0">
             
             <!-- Deduction Buttons Section -->
             <div class="px-6 py-4 border-b border-slate-100 bg-[#fdfdfb]">
@@ -773,91 +842,134 @@
                          </div>
                     </div>
                  </div>
-
-                 <!-- Keep Old Manual Buttons Hidden for backward compatibility -->
-                 <div class="deductions-grid hidden gap-2" id="deduction-buttons-container">
-                     <button type="button" onclick="setManualDeduction(0)" class="btn-deduct-0 active">0.0</button>
-                     <button type="button" onclick="setManualDeduction(0.5)" class="btn-deduct-penalty">0.5</button>
-                     <button type="button" onclick="setManualDeduction(1.0)" class="btn-deduct-penalty">1.0</button>
-                     <button type="button" onclick="setManualDeduction(1.5)" class="btn-deduct-penalty">1.5</button>
-                     <button type="button" onclick="setManualDeduction(2.0)" class="btn-deduct-penalty">2.0</button>
-                 </div>
             </div>
 
             <!-- Notes Section — Nafes Style -->
-            <div class="flex-1 flex flex-col p-6 overflow-hidden">
+            <div class="flex-1 flex flex-col p-6 pt-2 overflow-hidden">
                 <!-- Nafes Notes Header -->
-                <div class="nafes-notes-header cursor-pointer hover:bg-slate-50 transition-colors rounded-lg p-1 -mx-1 group/notes" onclick="showAllNotesModal()">
-                    <h3 class="nafes-notes-title mt-1">
-                        <i class="fas fa-clipboard-list"></i>
+                <div class="nafes-notes-header">
+                    <div class="nafes-notes-title cursor-pointer" onclick="showAllNotesModal()">
+                        <i class="far fa-file-alt"></i>
                         ملاحظات تجويدية وأدائية
-                    </h3>
-                    <div class="flex items-center gap-2">
-                        <button type="button" class="text-[10px] font-bold text-slate-400 group-hover/notes:text-yellow-600 transition-colors bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200/60 shadow-sm pointer-events-none">
-                            <i class="fas fa-bars" style="font-size:9px"></i> الكل
-                        </button>
+                    </div>
+                    <button type="button" onclick="showAllNotesModal()" class="nafes-btn-all group/notes">
+                         الكل <i class="fas fa-bars text-[9px]"></i>
+                    </button>
+                </div>
+                
+                <div id="notes-container" class="flex-1 overflow-y-auto flex flex-wrap gap-2 py-4 content-start sidebar-scroller">
+                    <input type="hidden" name="note_ids" id="note-ids">
+                    <input type="hidden" name="note_texts" id="note-texts">
+                    <!-- Current selected notes will appear here -->
+                    <div class="notes-empty-state w-full text-center py-4 text-slate-300">
+                        <i class="fas fa-info-circle text-xs mb-1"></i>
+                        <p class="text-[10px] font-bold">لا توجد ملاحظات مختارة</p>
                     </div>
                 </div>
                 
-                <!-- Tag Area (Selected Notes) -->
-                <div id="selected-notes-tags" class="flex flex-wrap gap-2 mb-3 min-h-[32px]">
-                    <!-- Display selected note tags here -->
-                    <p class="text-xs text-slate-400 italic">لا توجد ملاحظات مختارة...</p>
+                <!-- Notes Search/Select (Nafes UI) -->
+                <div class="mt-auto">
+                     <div class="nafes-search-input-container">
+                         <input type="text" 
+                                id="notes-quick-search" 
+                                class="nafes-search-input" 
+                                placeholder="ابحث أو أضف ملاحظة..."
+                                onclick="showAllNotesModal()">
+                     </div>
                 </div>
-                
-                <!-- Hidden Notes Storage -->
-                <select id="unified-note-select" multiple class="hidden" dir="rtl">
-                    @foreach ($notes ?? [] as $note)
-                        <option value="{{ $note->id }}">{{ $note->note }}</option>
-                    @endforeach
-                </select>
-                <input type="hidden" name="note_ids" id="note-ids">
-                <input type="hidden" name="note_texts" id="note-texts">
-                <div id="selected-notes-display" class="hidden"></div> <!-- Fallback for original logic -->
-
-                <!-- Search Input -->
-                <div class="mb-3">
-                    <input type="text" class="nafes-search-input" placeholder="ابحث أو أضف ملاحظة..." id="notes-search-input" oninput="filterNotesList(this.value)">
-                </div>
-
-                <!-- Fast selection suggested notes -->
-                <div class="space-y-3 overflow-y-auto sidebar-scroller flex-1" id="notes-categories-list">
-                    @php
-                        $categories = $notes->groupBy('category_name');
-                    @endphp
-                    @foreach($categories as $catName => $catNotes)
-                        <div class="category-block">
-                             <p class="category-title">{{ $catName ?: 'ملاحظات عامة' }}</p>
-                             <div class="flex flex-wrap gap-2">
-                                 @foreach($catNotes->take(5) as $note)
-                                     <button type="button" onclick="toggleNoteSelect({{ $note->id }})" class="note-btn" id="note-card-{{ $note->id }}">
-                                         {{ $note->note }}
-                                     </button>
-                                 @endforeach
-                             </div>
-                        </div>
-                    @endforeach
-                    @if(isset($isEditModeBlade) && $isEditModeBlade)
-                        @php
-                            \Log::info('[Quran View] Questions display summary', [
-                                'is_edit_mode' => true,
-                                'total_questions' => $totalQuestions,
-                                'shown_questions_count' => $shownQuestionsCount,
-                                'question_ids' => collect($questions)->pluck('question.id')->toArray()
-                            ]);
-                        @endphp
-                    @endif
-                </div>
-
-                <!-- Nafes Recommendations Card -->
-                <div class="nafes-reco-card mt-3" onclick="showRecommendationsModal()">
-                    <div class="nafes-reco-title">
-                        <i class="fas fa-pen-fancy"></i>
-                        ملاحظات وتوصيات
-                    </div>
                 </div>
             </div>
+            
+            <select id="unified-note-select" multiple class="hidden"></select>
+                </div>
+            </div>
+
+            <!-- Save Section (Fixed Bottom) -->
+            <div class="p-6 bg-slate-50 border-t border-slate-100 shrink-0">
+                <button type="submit" class="w-full bg-secondary hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i>
+                    حفظ التقييم الحالي
+                </button>
+            </div>
         </form>
+    </aside>
+
+    <!-- CENTER: Mushaf & Question -->
+    <section id="question-content" class="w-full xl:flex-1 bg-[#f8f7f2] flex flex-col h-auto xl:h-full overflow-visible xl:overflow-hidden border-b xl:border-b-0 xl:border-l xl:border-r border-slate-200">
+        <!-- Question Text Card -->
+        <div class="p-6 bg-white m-6 mb-2 rounded-2xl shadow-sm border border-slate-100 relative">
+            <span class="absolute top-6 right-6 w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.4)]"></span>
+            <div class="pe-6">
+                <span class="text-[10px] font-bold text-slate-400 mb-1 block uppercase tracking-wider">نص السؤال</span>
+                <h3 id="current-question-text" class="text-lg font-bold text-[#1e2540] leading-relaxed">{{ $questions[$safeIndex]['question']->question_text ?? '' }}</h3>
+            </div>
+        </div>
+        
+        <!-- Mushaf Container -->
+        <div class="flex-1 bg-white mx-4 md:mx-6 mb-4 md:mb-6 rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col min-h-[50vh] xl:min-h-0">
+             <div class="quran-scroll-area flex-1 overflow-y-auto p-6 md:p-8 xl:p-10 bg-[#fffef8]">
+                 <div id="mushaf-rendered-content" class="mushaf-text-display">
+                     <!-- Loading content -->
+                     <div class="flex items-center justify-center h-full text-slate-300">
+                         <i class="fas fa-spinner fa-spin text-3xl"></i>
+                     </div>
+                 </div>
+             </div>
+             <!-- Nafes Bottom Navigation -->
+             <div class="p-4 border-t border-slate-100 bg-white flex justify-between items-center relative z-10 w-full rounded-b-2xl">
+                 <button type="button" onclick="if(typeof window.switchToQuestion === 'function' && window.currentIndex > 0) window.switchToQuestion(window.currentIndex - 1)" class="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-200 text-slate-500 font-bold hover:bg-slate-50 hover:text-[#1e2540] transition-colors active:scale-95 shadow-sm prev-btn">
+                     <i class="fas fa-chevron-right text-[10px]"></i>
+                     <span class="text-xs uppercase tracking-wider">السؤال السابق</span>
+                 </button>
+                 <button type="button" onclick="if(typeof window.switchToQuestion === 'function' && window.currentIndex < (window.allAnswers ? window.allAnswers.length : 10) - 1) window.switchToQuestion(window.currentIndex + 1)" class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#1e2540] text-white font-bold hover:bg-[#2d375e] transition-colors shadow hover:shadow-md active:scale-95 next-btn">
+                     <span class="text-xs uppercase tracking-wider">السؤال التالي</span>
+                     <i class="fas fa-chevron-left text-[10px]"></i>
+                 </button>
+             </div>
+        </div>
+    </section>
+
+    <!-- LEFT SIDEBAR: Questions -->
+    <aside id="questions-sidebar" class="w-full xl:w-[300px] 2xl:w-[320px] border-b xl:border-b-0 xl:border-r border-slate-200 bg-white flex flex-col h-auto xl:h-full sidebar-scroller shrink-0">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-[#fdfdfb] shrink-0">
+            <h2 class="font-bold text-[#1e2540]">الأسئلة</h2>
+            <span class="text-xs px-2 py-1 bg-slate-100 text-slate-500 rounded-full font-bold">
+                {{ count($questions) }}/<span id="questions-current-count">{{ $safeIndex + 1 }}</span>
+            </span>
+        </div>
+        <div id="questions-list-container" class="flex-1 overflow-y-auto p-4 space-y-2 bg-[#fdfdfb] max-h-[40vh] xl:max-h-none sidebar-scroller">
+            @foreach ($questions as $index => $q)
+                <div onclick="switchToQuestion({{ $index }})" 
+                     id="question-pill-{{ $index }}"
+                     class="question-pill {{ $index === $safeIndex ? 'active' : '' }} group">
+                    <div class="status-circle {{ isset($allAnswers[$index]) ? 'completed' : '' }}">
+                        <span id="question-num-{{ $index }}">{{ $index + 1 }}</span>
+                        <i class="fas fa-check {{ isset($allAnswers[$index]) ? '' : 'hidden' }} text-[10px]" id="check-{{ $index }}"></i>
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <h4 class="text-sm font-bold text-[#30355a] truncate">سورة {{ $q['question']->surah }}</h4>
+                        <div class="question-meta truncate">
+                            @if(isset($q['question']->start_ayah_number) && isset($q['question']->end_ayah_number))
+                                من الآية {{ $q['question']->start_ayah_number }} إلى {{ $q['question']->end_ayah_number }}
+                            @else
+                                {{ \Illuminate\Support\Str::limit($q['question']->question_text, 30) }}
+                            @endif
+                        </div>
+                        @if(isset($q['question']->qiraa_name) && !empty($q['question']->qiraa_name))
+                            <span class="qiraa-badge">{{ $q['question']->qiraa_name }}</span>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        
+        <!-- Nafes Bottom Action Area -->
+        <div class="p-4 bg-white border-t border-slate-100 shrink-0">
+            <button class="nafes-relief-btn" onclick="toggleReliefBox()">
+                طلب التخفيف
+                <i class="fas fa-asterisk relief-icon"></i>
+            </button>
+        </div>
     </aside>
 
     <!-- Hidden question data for JavaScript -->
@@ -877,33 +989,62 @@
 
     <!-- Modals -->
     <!-- Relief Modal -->
-    <div id="relief-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in">
-             <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                 <h3 class="font-bold text-[#1e2540]">طلب التخفيف من اللجنة</h3>
-                 <button type="button" onclick="toggleReliefBox()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+    <!-- Relief Modal (Nafes Design) -->
+    <div id="relief-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-100 hidden items-center justify-center p-4 transition-all duration-300">
+        <div id="relief-modal-content" class="bg-white rounded-[32px] shadow-2xl w-full max-w-[400px] overflow-hidden opacity-0 translate-y-4 scale-95 transition-all duration-300">
+             <!-- Modal Header -->
+             <div class="p-8 pb-4 text-center">
+                 <div class="flex justify-center items-center gap-2 mb-2">
+                     <h3 class="text-xl font-extrabold text-[#111827] flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"></span>
+                        طلب التخفيف
+                     </h3>
+                 </div>
+                 <p class="text-[13px] leading-relaxed text-slate-400 font-bold px-4">
+                    ستطلب موافقة المحكمين الآخرين على التخفيف عن هذا الطالب.
+                 </p>
              </div>
-             <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">درجة التخفيف المطلوبة</label>
-                    <div id="relief-grade-display" class="w-full">
-                         <!-- Will be filled by JS -->
+             
+             <!-- Modal Body -->
+             <div class="px-8 py-6 space-y-6">
+                 <!-- Custom Grade Select -->
+                 <div class="relative" id="relief-grade-select-container">
+                    <button type="button" onclick="toggleReliefGradeOptions()" class="w-full bg-[#f8f7f2] border-0 rounded-2xl py-4 px-6 flex items-center justify-between text-slate-600 font-bold transition-all hover:bg-[#f2f1eb]" id="relief-grade-trigger">
+                        <span id="selected-relief-grade-text">اختر الدرجة...</span>
+                        <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform duration-300" id="relief-grade-chevron"></i>
+                    </button>
+                    
+                    <!-- Dropdown Options -->
+                    <div id="relief-grade-options" class="absolute left-0 right-0 bottom-full mb-2 bg-[#f8f7f2] border border-slate-200 rounded-2xl shadow-xl overflow-hidden hidden z-10 transition-all">
+                        <div class="bg-slate-500 text-white py-3 px-6 text-sm font-bold text-center">
+                            اختر الدرجة...
+                        </div>
+                        <div class="max-h-[240px] overflow-y-auto sidebar-scroller">
+                            @foreach(['%60', '%55', '%50', '%45', '%40', '%35', '%30'] as $grade)
+                                <button type="button" onclick="selectReliefGrade('{{ $grade }}')" class="w-full py-3.5 px-6 text-center text-slate-600 font-extrabold hover:bg-slate-100 transition-colors border-b border-slate-100 last:border-0">
+                                    {{ $grade }}
+                                </button>
+                            @endforeach
+                        </div>
                     </div>
                     <input type="hidden" id="relief-grade" name="relief_grade" value="">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">السبب أو المسوغ</label>
-                    <textarea id="relief-reason" class="w-full rounded-2xl border border-slate-200 p-4 text-sm focus:ring-2 focus:ring-yellow-500/20" rows="3" placeholder="لماذا تطلب التخفيف لهذه اللجنة؟"></textarea>
-                </div>
-                <button type="button" id="request-relief-btn" class="w-full py-4 bg-yellow-600 hover:bg-yellow-700 text-white rounded-2xl font-bold shadow-lg shadow-yellow-900/10 active:scale-95 transition-all">
-                    إرسال الطلب للجنة
-                </button>
+                 </div>
+
+                 <!-- Action Buttons -->
+                 <div class="flex items-center gap-3">
+                    <button type="button" id="request-relief-submit-btn" class="flex-1 py-4 bg-[#f8f7f2] hover:bg-[#f2f1eb] text-slate-700 rounded-2xl font-extrabold text-[15px] transition-all active:scale-[0.98] border border-slate-200 shadow-sm">
+                        إرسال الطلب
+                    </button>
+                    <button type="button" onclick="toggleReliefBox()" class="w-[80px] py-4 bg-white hover:bg-slate-50 text-slate-400 rounded-2xl font-bold text-sm transition-all border border-slate-100 active:scale-95">
+                        إلغاء
+                    </button>
+                 </div>
              </div>
         </div>
     </div>
 
     <!-- All Notes Modal (Nafes Design) -->
-    <div id="all-notes-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-6 transition-opacity">
+    <div id="all-notes-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-100 hidden flex-col items-center justify-center p-6 transition-opacity">
         <div id="all-notes-modal-content" class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl h-[85vh] flex flex-col overflow-hidden relative opacity-0 translate-y-4 scale-95 transition-all duration-300">
              <!-- Modal Header -->
              <div class="p-5 border-b border-slate-100 flex justify-center items-center relative">
@@ -925,12 +1066,14 @@
 
                  <!-- Categories Grid -->
                  <div class="space-y-6 flex-1" id="modal-notes-list">
+                    @php // Categories @endphp
                     @foreach($categories as $catName => $catNotes)
                         <div class="modal-category-block">
-                             <h4 class="text-[11px] font-bold text-slate-400 mb-3 flex items-center gap-1.5 justify-end">
-                                 {{ $catName ?: 'ملاحظات عامة' }} <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 block shadow-[0_0_6px_rgba(234,179,8,0.5)]"></span>
+                             <h4 class="text-[11px] font-bold text-slate-400 mb-3 flex items-center gap-1.5 justify-start">
+                                 <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 block shadow-[0_0_6px_rgba(234,179,8,0.5)]"></span>
+                                 {{ $catName ?: 'ملاحظات عامة' }}
                              </h4>
-                             <div class="flex flex-wrap gap-2 justify-end">
+                             <div class="flex flex-wrap gap-2 justify-start">
                                  @foreach($catNotes as $note)
                                      <button type="button" onclick="toggleNoteSelect({{ $note->id }}); updateModalChipVisual(this)" class="nafes-modal-chip active-state-check" id="modal-note-card-{{ $note->id }}" data-note-text="{{ mb_strtolower($note->note) }}">
                                          <span class="check-icon hidden text-white ml-0.5"><i class="fas fa-check text-[10px]"></i></span>
@@ -1195,19 +1338,105 @@
         };
 
         // Modal UI triggers
-        window.showAllNotesModal = function() {
+        console.log('[Notes UI] 🚀 Initializing Performance Notes JS...');
+        // Global notes data for UI lookups
+        window.allNotes = @json($notes);
+        window.findNoteById = function(id) {
+            return window.allNotes.find(n => String(n.id) === String(id));
+        };
+
+        // Modal UI triggers
+
+        window.closeAllNotesModal = function() {
             const modal = document.getElementById('all-notes-modal');
             const content = document.getElementById('all-notes-modal-content');
             if (modal && content) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                document.body.style.overflow = 'hidden';
-                // Trigger animation
+                // Reverse animation
+                content.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+                content.classList.add('opacity-0', 'translate-y-4', 'scale-95');
                 setTimeout(() => {
-                    content.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
-                    content.classList.add('opacity-100', 'translate-y-0', 'scale-100');
-                }, 10);
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }, 300);
             }
+        };
+
+        window.filterModalNotes = function(searchVal) {
+            const query = (searchVal || '').trim().toLowerCase();
+            const categories = document.querySelectorAll('.modal-category-block');
+            
+            categories.forEach(block => {
+                let hasVisibleNotes = false;
+                const chips = block.querySelectorAll('.nafes-modal-chip');
+                
+                chips.forEach(chip => {
+                    const text = chip.getAttribute('data-note-text') || '';
+                    if(query === '' || text.includes(query)) {
+                        chip.style.display = 'inline-flex';
+                        hasVisibleNotes = true;
+                    } else {
+                        chip.style.display = 'none';
+                    }
+                });
+                
+                block.style.display = hasVisibleNotes ? 'block' : 'none';
+            });
+        };
+
+        window.updateModalChipVisual = function(btn) {
+            if(!btn) return;
+            const isActive = btn.classList.contains('active');
+            const checkIcon = btn.querySelector('.check-icon');
+            if(isActive) {
+                if(checkIcon) checkIcon.classList.remove('hidden');
+            } else {
+                if(checkIcon) checkIcon.classList.add('hidden');
+            }
+            updateModalCountDisplay();
+        };
+
+        function updateModalCountDisplay() {
+            const activeCount = document.querySelectorAll('#modal-notes-list .nafes-modal-chip.active').length;
+            const countSpan = document.getElementById('modal-selected-count');
+            if(countSpan) countSpan.textContent = activeCount;
+        }
+
+        window.toggleNoteSelect = function(id) {
+            const btn = document.getElementById('modal-note-card-' + id);
+            if(!btn) return;
+            
+            btn.classList.toggle('active');
+            updateModalChipVisual(btn);
+            
+            // Sync with sidebar
+            const idsField = document.getElementById('note-ids');
+            const textsField = document.getElementById('note-texts');
+            if(!idsField || !textsField) return;
+
+            let ids = getSelectedNoteIds();
+            let texts = textsField.value ? JSON.parse(textsField.value) : [];
+
+            const idStr = String(id);
+            const index = ids.indexOf(idStr);
+            
+            if (btn.classList.contains('active')) {
+                if (index === -1) {
+                    const note = window.allNotes.find(n => String(n.id) === idStr);
+                    ids.push(idStr);
+                    texts.push(note ? note.note : 'ملاحظة');
+                }
+            } else {
+                if (index > -1) {
+                    ids.splice(index, 1);
+                    texts.splice(index, 1);
+                }
+            }
+
+            idsField.value = JSON.stringify(ids);
+            textsField.value = JSON.stringify(texts);
+            
+            updateSelectedNotesDisplay(ids, texts);
         };
 
         window.closeAllNotesModal = function() {
@@ -1242,35 +1471,34 @@
         };
 
         function updateSelectedNotesDisplay(ids, texts) {
-            console.log('[Display] 🎨 updateSelectedNotesDisplay called:', {
-                ids: ids,
-                texts: texts,
-                idsLength: ids ? ids.length : 0,
-                textsLength: texts ? texts.length : 0,
-                timestamp: new Date().toISOString()
-            });
-
-            // 1. Update Tags Display
-            const tagsContainer = document.getElementById('selected-notes-tags');
+            const tagsContainer = document.getElementById('notes-container');
             if (tagsContainer) {
                 if (!ids || ids.length === 0) {
-                    tagsContainer.innerHTML = '<p class="text-xs text-slate-400 italic">لا توجد ملاحظات مختارة...</p>';
+                    tagsContainer.innerHTML = `
+                        <div class="notes-empty-state w-full text-center py-4 text-slate-300">
+                            <i class="fas fa-info-circle text-xs mb-1"></i>
+                            <p class="text-[10px] font-bold">لا توجد ملاحظات مختارة</p>
+                        </div>
+                    `;
                 } else {
                     const html = ids.map((id, index) => {
-                        const text = texts[index] || findNoteById(id)?.text || 'ملاحظة غير معروفة';
+                        const note = window.allNotes.find(n => String(n.id) === String(id));
+                        const category = note ? note.category_name : '';
+                        const baseText = texts[index] || (note ? note.note : 'ملاحظة');
                         
-                        // Create a temporary element to safely escape HTML
                         const div = document.createElement('div');
-                        div.textContent = text;
+                        div.textContent = baseText;
                         const escapedText = div.innerHTML;
 
+                        const label = category ? `${category}: ${escapedText}` : escapedText;
+
                         return `
-                            <span class="note-tag group">
-                                ${escapedText}
-                                <button type="button" onclick="removeNote('${id}', event)" class="note-tag-remove" title="حذف">
+                            <div class="nafes-note-chip">
+                                <span>${label}</span>
+                                <span class="remove-btn" onclick="removeNote('${id}', event)">
                                     <i class="fas fa-times"></i>
-                                </button>
-                            </span>
+                                </span>
+                            </div>
                         `;
                     }).join('');
                     
@@ -2117,33 +2345,59 @@
     // Toggle Relief Box
     // ════════════════════════════════════════════════════════════════
     function toggleReliefBox() {
-        const reliefBox = document.getElementById('relief-box');
-        const toggleIcon = document.getElementById('relief-toggle-icon');
-
-        if (reliefBox.classList.contains('hidden')) {
-            // إظهار البوكس
-            reliefBox.classList.remove('hidden');
+        const modal = document.getElementById('relief-modal');
+        const content = document.getElementById('relief-modal-content');
+        
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
             setTimeout(() => {
-                reliefBox.classList.remove('scale-95', 'opacity-0');
-                reliefBox.classList.add('scale-100', 'opacity-100');
+                content.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+                content.classList.add('opacity-100', 'translate-y-0', 'scale-100');
             }, 10);
-
-            // تدوير الأيقونة
-            if (toggleIcon) {
-                toggleIcon.classList.add('rotate-180');
-            }
         } else {
-            // إخفاء البوكس
-            reliefBox.classList.remove('scale-100', 'opacity-100');
-            reliefBox.classList.add('scale-95', 'opacity-0');
+            content.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+            content.classList.add('opacity-0', 'translate-y-4', 'scale-95');
             setTimeout(() => {
-                reliefBox.classList.add('hidden');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
             }, 300);
+        }
+    }
 
-            // إرجاع الأيقونة
-            if (toggleIcon) {
-                toggleIcon.classList.remove('rotate-180');
-            }
+    window.toggleReliefGradeOptions = function() {
+        const options = document.getElementById('relief-grade-options');
+        const chevron = document.getElementById('relief-grade-chevron');
+        if (options.classList.contains('hidden')) {
+            options.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+            
+            // Close on outside click
+            const handler = (e) => {
+                if (!document.getElementById('relief-grade-select-container').contains(e.target)) {
+                    options.classList.add('hidden');
+                    chevron.classList.remove('rotate-180');
+                    document.removeEventListener('click', handler);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', handler), 10);
+        } else {
+            options.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+
+    window.selectReliefGrade = function(grade) {
+        document.getElementById('selected-relief-grade-text').textContent = grade;
+        document.getElementById('relief-grade').value = grade.replace('%', '');
+        window.toggleReliefGradeOptions();
+        
+        // Update send button style if needed
+        const btn = document.getElementById('request-relief-submit-btn');
+        if (btn) {
+            btn.classList.add('bg-yellow-50', 'border-yellow-200');
         }
     }
 

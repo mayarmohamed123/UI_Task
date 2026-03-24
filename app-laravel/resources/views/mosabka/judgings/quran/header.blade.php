@@ -47,28 +47,8 @@
             console.error('[Header] ❌ Select2 failed to load!');
         }
     </script>
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: '#1e3a8a', dark: '#1e40af' },
-                        secondary: { DEFAULT: '#4b5563', dark: '#6b7280' },
-                        accent: { DEFAULT: '#e5e7eb', dark: '#d1d5db' },
-                        text: { DEFAULT: '#111827', dark: '#f3f4f6' },
-                        card: { DEFAULT: '#ffffff', dark: '#1f2a44' },
-                    },
-                    fontFamily: {
-                        amiri: ['Amiri Quran', 'serif'],
-                        tajawal: ['Tajawal', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Styles / Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         function updateJudgingHeaderOffset() {
             const header = document.querySelector('header.header-bg');
@@ -99,17 +79,17 @@
 
     <style>
         :root {
-            --gold-primary: #e0b57b;
-            --gold-dark: #c99d5f;
-            --header-blue: #30355a;
-            --sidebar-blue: #2d3561;
-            --text-muted: #7e8299;
+            --gold-primary: var(--color-primary);
+            --gold-dark: var(--color-primary-dark);
+            --header-bg-color: var(--color-secondary);
+            --sidebar-bg-color: var(--color-bg-card);
+            --text-muted: var(--color-text-secondary);
         }
         /* Global Body */
         body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f5f6fb;
-            color: #30355a;
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-main);
+            color: var(--color-text-primary);
             padding-top: var(--judging-header-offset, 80px);
         }
 
@@ -224,12 +204,11 @@
 
         /* Header Enhancements */
         .header-bg {
-            background: linear-gradient(90deg, var(--header-blue), var(--sidebar-blue));
-            /* Gradient for visual appeal */
+            background-color: var(--header-bg-color);
         }
 
         .dark .header-bg {
-            background: linear-gradient(90deg, #1e40af, #374151);
+            background: #0f172a;
         }
 
         .nav-link {
@@ -662,23 +641,24 @@
     </style>
 </head>
 
-<body class="min-h-screen bg-[#f8f7f2] font-tajawal text-[#30355a] xl:overflow-hidden">
-<header class="bg-[#1e2540] text-white py-3 px-6 fixed top-0 left-0 right-0 z-50">
+<body class="min-h-screen bg-bg-main font-sans text-text-primary xl:overflow-hidden">
+<header class="header-bg text-white py-3 px-6 fixed top-0 left-0 right-0 z-50 shadow-lg">
     <div class="flex justify-between items-center max-w-[1920px] mx-auto">
-        <!-- Top Left: Logout / Back -->
-        <div class="flex items-center">
-            @php
-                $committeeId = request()->get('committee_id');
-                $backUrl = $committeeId
-                    ? route('judgings.index', ['committee_id' => $committeeId])
-                    : route('judgings.index');
-            @endphp
-            <a href="{{ $backUrl }}" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/10">
-                <i class="fas fa-arrow-right-from-bracket"></i>
-            </a>
-            <div class="me-4 flex flex-col items-start">
-                <span class="text-xs text-slate-400">رئيس اللجنة</span>
-                <span class="text-sm font-bold text-white">{{ auth()->user()->full_name ?? 'د. عبد الرحمن السديس' }}</span>
+        <!-- Top Left: Committee Head & Participant -->
+        @php
+            $committeeId = request()->get('committee_id');
+            $backUrl = $committeeId
+                ? route('judgings.index', ['committee_id' => $committeeId])
+                : route('judgings.index');
+        @endphp
+        <!-- Top Right (RTL Start): Logo & Association Info -->
+        <div class="flex items-center gap-3">
+            <div class="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center shadow-lg overflow-hidden border border-white/10 p-1">
+                <img src="{{ asset('assets/images/logo-gold.png') }}" onerror="this.src='{{ asset('assets/images/logo.png') }}'" alt="Logo" class="w-full h-full object-contain">
+            </div>
+            <div class="text-start">
+                <h1 class="text-sm font-bold text-white leading-tight">جمعية الماهر القرآنية</h1>
+                <p class="text-[10px] text-slate-400">طريقك نحو المهارة</p>
             </div>
         </div>
 
@@ -688,31 +668,31 @@
             <span id="header-timer" class="font-mono text-lg font-medium text-white tracking-widest leading-none">00:00</span>
         </div>
 
-        <!-- Top Right: Participant & Competition Info -->
+        <!-- Top Left (RTL End): Committee Head & Participant -->
         <div class="flex items-center gap-6">
-            <div class="flex flex-col items-end text-end">
+            <div class="flex flex-col items-end">
                <div class="flex items-center gap-2 mb-1">
-                   <span class="text-[10px] px-1.5 py-0.5 bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 rounded uppercase font-bold tracking-wider">المتسابق</span>
                    <span class="text-sm font-bold text-white">{{ $participant_name ?? ($studentDetail->competitionParticipant->full_name ?? 'أحمد بن محمد الكندري') }}</span>
+                   <span class="text-[10px] px-1.5 py-0.5 bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 rounded uppercase font-bold tracking-wider">المتسابق</span>
                </div>
                <div class="flex items-center gap-4 text-[11px] text-slate-300">
                     <div class="flex items-center gap-1">
-                        <span class="text-slate-500">الفرع:</span>
                         <span>{{ $studentDetail->competitionVersionBranch->name ?? 'الأول - القرآن الكريم كاملاً' }}</span>
+                        <span class="text-slate-500">:الفرع</span>
                     </div>
                 </div>
             </div>
-            
+
             <div class="h-10 w-px bg-white/10 mx-2"></div>
 
             <div class="flex items-center gap-3">
-                <div class="text-end">
-                    <h1 class="text-sm font-bold text-white leading-tight">جمعية الماهر القرآنية</h1>
-                    <p class="text-[10px] text-slate-400">طريقك نحو المهارة</p>
+                <div class="flex flex-col items-end border-e border-white/10 pe-4">
+                    <span class="text-xs text-slate-400">رئيس اللجنة</span>
+                    <span class="text-sm font-bold text-white">{{ auth()->user()->full_name ?? 'د. عبد الرحمن السديس' }}</span>
                 </div>
-                <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="w-full h-full object-contain p-1">
-                </div>
+                <a href="{{ $backUrl }}" class="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/10">
+                    <i class="fas fa-arrow-right-from-bracket"></i>
+                </a>
             </div>
         </div>
     </div>

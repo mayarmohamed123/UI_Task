@@ -124,14 +124,14 @@
                 '<div class="mb-10">' +
                 '<div class="flex items-center justify-between mb-6">' +
                 '<div class="flex items-center gap-3">' +
-                '<div class="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center text-gold">' +
+                '<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">' +
                 '<i class="fas fa-question-circle text-xl"></i>' +
                 '</div>' +
-                '<h2 class="text-2xl font-bold text-navy">السؤال ' + (index + 1) + '</h2>' +
+                '<h2 class="text-2xl font-bold text-text-primary">السؤال ' + (index + 1) + '</h2>' +
                 '</div>' +
                 revealBtnHtml +
                 '</div>' +
-                '<div class="text-xl text-gray-800 leading-relaxed font-medium bg-gray-50/50 p-6 rounded-2xl border border-dashed border-gray-200">' +
+                '<div class="text-xl text-text-primary leading-relaxed font-medium bg-bg-main p-6 rounded-2xl border border-dashed border-border">' +
                 questionText +
                 '</div>' +
                 '</div>' +
@@ -226,8 +226,8 @@
             const isActive = index === currentIndex;
 
             // Apply same styling as Quran: first question or active question gets blue background
-            const bgClass = isActive ? 'bg-blue-900 text-white shadow-sm border-blue-900' : 'bg-slate-50 text-slate-600 border-slate-200';
-            const badgeClass = isActive ? 'bg-white text-blue-900' : 'bg-slate-200 text-slate-500';
+            const bgClass = isActive ? 'bg-secondary text-white shadow-sm border-secondary' : 'bg-slate-50 text-slate-600 border-slate-200';
+            const badgeClass = isActive ? 'bg-white text-secondary' : 'bg-slate-200 text-slate-500';
             const titleClass = isActive ? 'text-blue-100' : 'text-slate-800';
 
             const div = document.createElement('div');
