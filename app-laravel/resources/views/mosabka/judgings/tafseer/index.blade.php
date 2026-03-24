@@ -1,7 +1,7 @@
 <!-- resources/views/modules/mosabka/judgings/tafseer/index.blade.php -->
 @include('mosabka::judgings.quran.header')
 @php 
-    $safeIndex = is_numeric($currentIndex) ? (int)$currentIndex : 0; 
+    $safeIndex = is_numeric($currentIndex ?? 0) ? (int)($currentIndex ?? 0) : 0; 
     
     // Performance Notes Content as requested by user
     $demoNotes = [
@@ -895,13 +895,6 @@
                 </div>
             </div>
 
-            <!-- Nafes Bottom Action Area: Relief Request -->
-            <div class="p-4 bg-white border-t border-slate-100 shrink-0">
-                <button class="nafes-relief-btn" onclick="toggleReliefBox()">
-                    طلب التخفيف
-                    <i class="fas fa-asterisk relief-icon"></i>
-                </button>
-            </div>
 
             <!-- Bottom Action Block (السؤال التالي) -->
             <div class="p-6 pt-4 border-t border-slate-100 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.02)] relative z-10 shrink-0 mt-auto">
@@ -913,59 +906,6 @@
         </form>
     </aside>
 
-    <!-- Relief Modal (Nafes Design) -->
-    <div id="relief-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-100 hidden items-center justify-center p-4 transition-all duration-300">
-        <div id="relief-modal-content" class="bg-white rounded-[32px] shadow-2xl w-full max-w-[400px] overflow-hidden opacity-0 translate-y-4 scale-95 transition-all duration-300">
-             <!-- Modal Header -->
-             <div class="p-8 pb-4 text-center">
-                 <div class="flex justify-center items-center gap-2 mb-2">
-                     <h3 class="text-xl font-extrabold text-[#111827] flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"></span>
-                        طلب التخفيف
-                     </h3>
-                 </div>
-                 <p class="text-[13px] leading-relaxed text-slate-400 font-bold px-4">
-                    ستطلب موافقة المحكمين الآخرين على التخفيف عن هذا الطالب.
-                 </p>
-             </div>
-             
-             <!-- Modal Body -->
-             <div class="px-8 py-6 space-y-6">
-                 <!-- Custom Grade Select -->
-                 <div class="relative" id="relief-grade-select-container">
-                    <button type="button" onclick="toggleReliefGradeOptions()" class="w-full bg-[#f8f7f2] border-0 rounded-2xl py-4 px-6 flex items-center justify-between text-slate-600 font-bold transition-all hover:bg-[#f2f1eb]" id="relief-grade-trigger">
-                        <span id="selected-relief-grade-text">اختر الدرجة...</span>
-                        <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform duration-300" id="relief-grade-chevron"></i>
-                    </button>
-                    
-                    <!-- Dropdown Options -->
-                    <div id="relief-grade-options" class="absolute left-0 right-0 bottom-full mb-2 bg-[#f8f7f2] border border-slate-200 rounded-2xl shadow-xl overflow-hidden hidden z-10 transition-all">
-                        <div class="bg-slate-500 text-white py-3 px-6 text-sm font-bold text-center">
-                            اختر الدرجة...
-                        </div>
-                        <div class="max-h-[240px] overflow-y-auto sidebar-scroller">
-                            @foreach(['%60', '%55', '%50', '%45', '%40', '%35', '%30'] as $grade)
-                                <button type="button" onclick="selectReliefGrade('{{ $grade }}')" class="w-full py-3.5 px-6 text-center text-slate-600 font-extrabold hover:bg-slate-100 transition-colors border-b border-slate-100 last:border-0">
-                                    {{ $grade }}
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-                    <input type="hidden" id="relief-grade" name="relief_grade" value="">
-                 </div>
-
-                 <!-- Action Buttons -->
-                 <div class="flex items-center gap-3">
-                    <button type="button" id="request-relief-submit-btn" class="flex-1 py-4 bg-[#f8f7f2] hover:bg-[#f2f1eb] text-slate-700 rounded-2xl font-extrabold text-[15px] transition-all active:scale-[0.98] border border-slate-200 shadow-sm">
-                        إرسال الطلب
-                    </button>
-                    <button type="button" onclick="toggleReliefBox()" class="w-[80px] py-4 bg-white hover:bg-slate-50 text-slate-400 rounded-2xl font-bold text-sm transition-all border border-slate-100 active:scale-95">
-                        إلغاء
-                    </button>
-                 </div>
-             </div>
-        </div>
-    </div>
 
     <!-- MIDDLE COLUMN: Question Content -->
     <div class="main-content w-full xl:flex-1 bg-[#f8f7f2] flex flex-col h-auto xl:h-full lg:order-2 order-2 min-w-0 overflow-visible xl:overflow-hidden border-b xl:border-b-0 xl:border-l border-slate-200">
@@ -4540,71 +4480,7 @@
         });
     });
 </script>
-<script>
-    // Relief Modal functions (Nafes Design)
-    function toggleReliefBox() {
-        const modal = document.getElementById('relief-modal');
-        const content = document.getElementById('relief-modal-content');
-        
-        if (modal.classList.contains('hidden')) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                content.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
-                content.classList.add('opacity-100', 'translate-y-0', 'scale-100');
-            }, 10);
-        } else {
-            content.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
-            content.classList.add('opacity-0', 'translate-y-4', 'scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = '';
-            }, 300);
-        }
-    }
 
-    window.toggleReliefGradeOptions = function() {
-        const options = document.getElementById('relief-grade-options');
-        const chevron = document.getElementById('relief-grade-chevron');
-        if (options.classList.contains('hidden')) {
-            options.classList.remove('hidden');
-            chevron.classList.add('rotate-180');
-            const handler = (e) => {
-                if (!document.getElementById('relief-grade-select-container').contains(e.target)) {
-                    options.classList.add('hidden');
-                    chevron.classList.remove('rotate-180');
-                    document.removeEventListener('click', handler);
-                }
-            };
-            setTimeout(() => document.addEventListener('click', handler), 10);
-        } else {
-            options.classList.add('hidden');
-            chevron.classList.remove('rotate-180');
-        }
-    }
-
-    window.selectReliefGrade = function(grade) {
-        document.getElementById('selected-relief-grade-text').textContent = grade;
-        document.getElementById('relief-grade').value = grade.replace('%', '');
-        window.toggleReliefGradeOptions();
-        const btn = document.getElementById('request-relief-submit-btn');
-        if (btn) {
-            btn.classList.add('bg-yellow-50', 'border-yellow-200');
-        }
-    }
-
-    // Close modal on overlay click
-    document.addEventListener('DOMContentLoaded', () => {
-        const reliefModal = document.getElementById('relief-modal');
-        if (reliefModal) {
-            reliefModal.addEventListener('click', function(e) {
-                if (e.target === reliefModal) toggleReliefBox();
-            });
-        }
-    });
-</script>
 <script>
     // Notes system (matching Quran page)
     const NOTES_SOURCE = @json($notes->map(function ($note) {
